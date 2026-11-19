@@ -6,6 +6,7 @@ from typing import Callable
 
 from ..hdl._cd import *
 from ..hdl._ir import *
+from ..hdl._time import Period
 from ._pycoro import Tick, Settle, Delay, Passive, Active
 from ._async import DomainReset, BrokenTrigger, ProcessContext, TestbenchContext
 from amaranth_types import TestGenerator, TestCoroutine
@@ -156,7 +157,17 @@ class Simulator:
             If the simulation has been advanced since its creation or last reset.
         """
         ...
-    def add_clock(self, period, *, phase=..., domain=..., if_exists=...):
+    def add_sync_process(
+        self, process: Callable[[], TestGenerator[None]], *, domain: str | ClockDomain = ...
+    ) -> None: ...
+    def add_clock(
+        self,
+        period: Period | int | float,
+        *,
+        phase: Period | int | float | None = ...,
+        domain: str | ClockDomain = ...,
+        if_exists: bool = ...,
+    ) -> None:
         """Add a clock process.
 
         Ad"""
@@ -197,7 +208,7 @@ class Simulator:
         """
         ...
 
-    def run_until(self, deadline, *, run_passive=...):  # -> None:
+    def run_until(self, deadline: Period | int | float, *, run_passive=...):  # -> None:
         """
         run_until(deadline)
 

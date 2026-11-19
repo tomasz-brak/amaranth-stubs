@@ -167,6 +167,22 @@ class Member:
         ...
 
     @property
+    def init(self) -> Any:
+        """Initial value of a port member.
+
+        Returns
+        -------
+        :ref:`const-castable object <lang-constcasting>`
+            The initial value that was provided when constructing this :class:`Member`.
+
+        Raises
+        ------
+        :exc:`AttributeError`
+            If :py:`self` describes a signature member.
+        """
+        ...
+
+    @property
     def reset(self):  # -> None:
         """Reset value of a port member.
 
@@ -959,6 +975,7 @@ class FlippedInterface(Generic[_T_Signature, _T_Interface]):
     #            :pc:`unflipped.signature.flip()`
     #        """
     #        ...
+    def __hash__(self) -> int: ...
     def __eq__(self, other) -> bool:
         """Compare this flipped interface with another.
 
@@ -1173,6 +1190,8 @@ class ComponentMetadata(Annotation[Component]):
     origin : :class:`Component`
         Component described by this metadata instance.
     """
+
+    schema: dict = ...
     def __init__(self, origin: Component): ...
     @property
     def origin(self) -> Component:

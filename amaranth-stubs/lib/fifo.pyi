@@ -106,6 +106,8 @@ class SyncFIFO(Elaboratable, FIFOInterface):
     r_level : Signal(range(depth + 1)), out
         Number of unread entries.
     """
+
+    level: Signal
     def __init__(self, *, width: int, depth: int) -> None: ...
     def elaborate(self, platform) -> HasElaborate: ...
 
@@ -152,6 +154,8 @@ class SyncFIFOBuffered(Elaboratable, FIFOInterface):
     r_level : Signal(range(depth + 1)), out
         Number of unread entries.
     """
+
+    level: Signal
     def __init__(self, *, width: int, depth: int) -> None: ...
     def elaborate(self, platform) -> HasElaborate: ...
 
@@ -207,6 +211,8 @@ class AsyncFIFO(Elaboratable, FIFOInterface):
         Asserted, for at least one read-domain clock cycle, after the FIFO has been reset by
         the write-domain reset.
     """
+
+    r_rst: Signal
     def __init__(
         self, *, width: int, depth: int, r_domain: str = ..., w_domain: str = ..., exact_depth: bool = ...
     ) -> None: ...
@@ -267,6 +273,8 @@ class AsyncFIFOBuffered(Elaboratable, FIFOInterface):
         Asserted, for at least one read-domain clock cycle, after the FIFO has been reset by
         the write-domain reset.
     """
+
+    r_rst: Signal
     def __init__(
         self, *, width: int, depth: int, r_domain: str = ..., w_domain: str = ..., exact_depth: bool = ...
     ) -> None: ...

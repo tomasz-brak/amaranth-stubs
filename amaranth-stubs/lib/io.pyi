@@ -320,7 +320,7 @@ class Buffer(wiring.Component):
         oe: :py:`unsigned(1, init=0)` (if :py:`direction is Direction.Bidir`)
         oe: :py:`unsigned(1, init=1)` (if :py:`direction is Direction.Output`)
         """
-        def __init__(self, direction: Direction, width: int) -> None: ...
+        def __init__(self, direction: Direction | str, width: int) -> None: ...
         @property
         def direction(self) -> Direction: ...
         @property
@@ -346,7 +346,7 @@ class Buffer(wiring.Component):
             can be used to customize a component's signature.
         """
         ...
-    def __init__(self, direction: Direction, port: PortLike) -> None: ...
+    def __init__(self, direction: Direction | str, port: PortLike) -> None: ...
     @property
     def port(self) -> PortLike: ...
     @property
@@ -390,7 +390,7 @@ class FFBuffer(wiring.Component):
         oe: :py:`unsigned(1, init=0)` (if :py:`direction is Direction.Bidir`)
         oe: :py:`unsigned(1, init=1)` (if :py:`direction is Direction.Output`)
         """
-        def __init__(self, direction: Direction, width: int) -> None: ...
+        def __init__(self, direction: Direction | str, width: int) -> None: ...
         @property
         def direction(self) -> Direction: ...
         @property
@@ -411,25 +411,13 @@ class FFBuffer(wiring.Component):
         """
         ...
     def __init__(
-        self, direction: Direction, port: PortLike, *, i_domain: Optional[str] = ..., o_domain: Optional[str] = ...
-    ) -> None:
-        if not isinstance(port, PortLike):
-            raise TypeError(f"'port' must be a 'PortLike', not {port!r}")
-        self._port = port
-        super().__init__(FFBuffer.Signature(direction, len(port)).flip())
-        if self.signature.direction is not Direction.Output:
-            self._i_domain = i_domain or "sync"
-        elif i_domain is not None:
-            raise ValueError("Output buffer doesn't have an input domain")
-        if self.signature.direction is not Direction.Input:
-            self._o_domain = o_domain or "sync"
-        elif o_domain is not None:
-            raise ValueError("Input buffer doesn't have an output domain")
-        if port.direction is Direction.Input and self.direction is not Direction.Input:
-            raise ValueError(f"Input port cannot be used with {self.direction.name} buffer")
-        if port.direction is Direction.Output and self.direction is not Direction.Output:
-            raise ValueError(f"Output port cannot be used with {self.direction.name} buffer")
-
+        self,
+        direction: Direction | str,
+        port: PortLike,
+        *,
+        i_domain: Optional[str] = ...,
+        o_domain: Optional[str] = ...,
+    ) -> None: ...
     @property
     def i(self) -> Signal: ...
     @property
@@ -490,7 +478,7 @@ class DDRBuffer(wiring.Component):
         oe: :py:`unsigned(1, init=0)` (if :py:`direction is Direction.Bidir`)
         oe: :py:`unsigned(1, init=1)` (if :py:`direction is Direction.Output`)
         """
-        def __init__(self, direction: Direction, width: int) -> None: ...
+        def __init__(self, direction: Direction | str, width: int) -> None: ...
         @property
         def direction(self) -> Direction: ...
         @property
@@ -498,6 +486,12 @@ class DDRBuffer(wiring.Component):
         def __eq__(self, other) -> bool: ...
         def __repr__(self) -> str: ...
 
+    @property
+    def i(self): ...
+    @property
+    def o(self): ...
+    @property
+    def oe(self) -> Signal: ...
     @property
     def signature(self) -> Signature:
         """
@@ -511,7 +505,12 @@ class DDRBuffer(wiring.Component):
         """
         ...
     def __init__(
-        self, direction: Direction, port: PortLike, *, i_domain: Optional[str] = ..., o_domain: Optional[str] = ...
+        self,
+        direction: Direction | str,
+        port: PortLike,
+        *,
+        i_domain: Optional[str] = ...,
+        o_domain: Optional[str] = ...,
     ) -> None: ...
     @property
     def port(self) -> PortLike: ...
@@ -581,6 +580,18 @@ class Pin(wiring.PureInterface):
         is present.
     """
 
+    i_clk: Signal
+    i_fclk: Signal
+    i: Signal
+    i0: Signal
+    i1: Signal
+    o_clk: Signal
+    o_fclk: Signal
+    o: Signal
+    o0: Signal
+    o1: Signal
+    oe: Signal
+
     @property
     def path(self) -> tuple[str | int, ...]: ...
     @property
@@ -592,6 +603,10 @@ class Pin(wiring.PureInterface):
         """A signature for :class:`Pin`.  The parameters are as defined on the ``Pin`` class,
         and are accessible as attributes.
         """
+
+        width: int
+        dir: str
+        xdr: int
         def __init__(self, width: int, dir: str, *, xdr: int = ...) -> None: ...
         def __eq__(self, other) -> bool: ...
         def __repr__(self) -> str: ...

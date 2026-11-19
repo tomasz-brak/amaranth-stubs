@@ -61,6 +61,7 @@ class Field:
             :py:`Shape.cast(self.shape).width`
         """
         ...
+    def __hash__(self) -> int: ...
     def __eq__(self, other) -> bool:
         """
         Compare fields.
@@ -110,6 +111,7 @@ class Layout(ShapeCastable[View[Self]], metaclass=ABCMeta):  # pyright: ignore[r
         """Convert the representation defined by the layout to an unsigned :class:`Shape`."""
         ...
 
+    def __hash__(self) -> int: ...
     def __eq__(self, other) -> bool:
         """Compare the layout with another.
 
@@ -264,6 +266,7 @@ class UnionLayout(Layout):
             no fields.
         """
         ...
+    def const(self, init: Optional[Sequence[Any] | Mapping[int | str, Any]]) -> Const: ...
     def __repr__(self) -> str: ...
 
 class ArrayLayout(Layout):

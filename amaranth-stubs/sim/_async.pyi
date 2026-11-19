@@ -40,7 +40,8 @@ class EdgeTrigger:
     def __init__(self, signal: ValueLike, polarity: int): ...
 
 class DelayTrigger:
-    def __init__(self, interval: int | float): ...
+    interval: Period
+    def __init__(self, interval: Period | int | float): ...
 
 class TriggerCombination:
     """
@@ -159,7 +160,7 @@ class TriggerCombination:
         Equivalent to :meth:`edge(signal, 0) <edge>`.
         """
         ...
-    def delay(self, interval: int | float) -> TriggerCombination:
+    def delay(self, interval: Period | int | float) -> TriggerCombination:
         """
         Add a delay trigger to the list of triggers.
 
@@ -351,7 +352,7 @@ class SimulatorContext:
         before the call returns.
     """
     def __init__(self, design, engine: BaseEngine, process: BaseProcess): ...
-    def delay(self, interval: int | float) -> TriggerCombination:
+    def delay(self, interval: Period | int | float) -> TriggerCombination:
         """
         Wait until a time interval has elapsed.
 
@@ -443,6 +444,16 @@ class SimulatorContext:
 
         Equivalent to :meth:`edge(signal, 1) <edge>`.
         """
+        ...
+    def negedge(self, signal: ValueLike) -> TriggerCombination:
+        """
+        Asynchronously wait until a signal is deasserted.
+
+        Equivalent to :meth:`edge(signal, 0) <edge>`.
+        """
+        ...
+    def elapsed_time(self) -> Period:
+        """Return the currently elapsed simulation time."""
         ...
     @overload
     def tick(self, domain: str = ..., *, context: Optional[Elaboratable] = ...) -> TickTrigger: ...

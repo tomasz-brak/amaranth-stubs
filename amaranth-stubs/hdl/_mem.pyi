@@ -8,7 +8,7 @@ from ._ast import *
 from ._ir import Elaboratable, Fragment
 from amaranth_types.types import SrcLoc
 
-__all__ = ["MemoryData", "Memory", "ReadPort", "WritePort", "DummyPort"]
+__all__ = ["MemoryData", "MemoryInstance", "Memory", "ReadPort", "WritePort", "DummyPort"]
 
 @final
 class MemoryData:
@@ -78,6 +78,8 @@ class MemoryData:
         def __len__(self) -> int: ...
         def __repr__(self) -> str: ...
 
+    name: str
+    src_loc: SrcLoc
     def __init__(self, *, shape: ShapeLike, depth: int, init: Iterable[ValueLike], src_loc_at: int = ...) -> None: ...
     def freeze(self) -> None: ...
     @property
@@ -208,3 +210,7 @@ class DummyPort:
 class MemoryInstance(Fragment):
     attrs: dict
     def __init__(self, *, data: MemoryData, attrs: Optional[dict] = ..., src_loc: Optional[SrcLoc] = ...) -> None: ...
+    def read_port(
+        self, *, domain: str, addr: ValueLike, data: ValueLike, en: ValueLike, transparent_for: Iterable[int]
+    ) -> None: ...
+    def write_port(self, *, domain: str, addr: ValueLike, data: ValueLike, en: ValueLike) -> int: ...

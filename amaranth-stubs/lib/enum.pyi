@@ -7,7 +7,7 @@ from typing import Generic, TypeVar, overload
 from amaranth import *
 from ..hdl._ast import Assign, ValueCastable, ShapeCastable, ShapeLike, ValueLike, Format
 
-__all__ = ["EnumType", "Enum", "IntEnum", "Flag", "IntFlag", "EnumView", "FlagView", "auto", "unique"]
+__all__ = ["EnumType", "EnumMeta", "Enum", "IntEnum", "Flag", "IntFlag", "EnumView", "FlagView", "auto", "unique"]
 
 _T = TypeVar("_T")
 _T_Enum = TypeVar("_T_Enum", bound=Enum, default=Enum)
@@ -32,7 +32,7 @@ class EnumType(ShapeCastable, py_enum.EnumType):
     # Shape is required because if not passed, Amaranth enums revert to Python enum behavior
     # which is not compatible with this typing.
     def __new__(
-        cls, name, bases, namespace, shape: ShapeLike, view_class: ValueCastable | None = ..., **kwargs
+        cls, name, bases, namespace, shape: ShapeLike = ..., view_class: ValueCastable | None = ..., **kwargs
     ) -> EnumType: ...
     def as_shape(cls) -> Shape:
         """Cast this enumeration to a shape.
@@ -93,6 +93,8 @@ class EnumType(ShapeCastable, py_enum.EnumType):
     def from_bits(cls: type[_T], bits: int) -> _T: ...
     def format(cls, value: ValueLike, format_spec: str) -> Format: ...
 
+EnumMeta = EnumType
+
 class Enum(py_enum.Enum, metaclass=EnumType):
     """Subclass of the standard :class:`enum.Enum` that has :class:`EnumType` as
     its metaclass."""
@@ -145,6 +147,16 @@ class EnumView(ValueCastable, Generic[_T_EnumOrFlag]):
         -------
         :class:`Assign`
             ``self.as_value().eq(other)``
+        """
+        ...
+    def matches(self, *patterns: _T_EnumOrFlag) -> Value:
+        """Pattern matching.
+
+        Matches against a set of patterns, which must be values of the same enum as the view.
+
+        Returns
+        -------
+        :class:`Value`, :py:`unsigned(1)`
         """
         ...
     def __eq__(self, other: EnumView[_T_EnumOrFlag] | _T_EnumOrFlag) -> Value:  # pyright: ignore[reportIncompatibleMethodOverride]
